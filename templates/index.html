@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="25">
+    <title>Football Data</title>
+    <style>
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            width: 80%;
+            margin: 20px auto;
+            text-align: center;
+        }
+        img {
+            width: 32px;
+            height:32px;
+        }
+    </style>
+</head>
+<body>
+    
+    <form method="get" action="/">
+        <label for="competition_id">Choose a competition:</label>
+        <select name="competition_id" id="competition_id">
+        {% for name, comp_id in competitions.items() %}
+            <option value="{{ comp_id }}" {% if selected_competition == comp_id %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+        </select>
+
+        <label for="season">Choose a season:</label>
+        <select name="season" id="season">
+        {% for year in seasons %}
+            <option value="{{ year }}" {% if selected_season == year %}selected{% endif %}>{{ year }} - {{year + 1}}</option>
+        {% endfor %}
+        </select>
+        <input type="submit" value="Submit">
+    </form>
+
+    <h1>Competition Standings</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Team</th>
+                <th>Played</th>
+                <th>Won</th>
+                <th>Drawn</th>
+                <th>Lost</th>
+                <th>Points</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for standing in standings['standings'][0]['table'] %}
+            <tr>
+                <td>{{ standing['position'] }}</td>
+                <td><img src="{{standing['team']['logo']}}" />{{ standing['team']['name'] }}</td>
+                <td>{{ standing['playedGames'] }}</td>
+                <td>{{ standing['won'] }}</td>
+                <td>{{ standing['draw'] }}</td>
+                <td>{{ standing['lost'] }}</td>
+                <td>{{ standing['points'] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Upcoming Matches</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Home Team</th>
+                <th>Away Team</th>
+                <th>Date</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for match in matches['matches'] %}
+            <tr>
+                <td><img src="{{match['homeTeam']['logo']}}" />{{ match['homeTeam']['name'] }}</td>
+                <td><img src="{{match['awayTeam']['logo']}}" />{{ match['awayTeam']['name'] }}</td>
+                <td>{{ match['utcDate'] }}</td>
+                <td>
+                    {% if match['score']['fullTime']['homeTeam'] is not none and match['score']['fullTime']['awayTeam'] is not none %}
+                        {{ match['score']['fullTime']['homeTeam'] }} : {{ match['score']['fullTime']['awayTeam'] }}
+                    {% else %}
+                        Not played yet
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Delayed Scores (Completed Matches)</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Home Team</th>
+                <th>Away Team</th>
+                <th>Date</th>
+                <th>Final Score</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for match in completed_matches['matches'] %}
+            <tr>
+                <td><img src="{{match['homeTeam']['logo']}}" />{{ match['homeTeam']['name'] }}</td>
+                <td><img src="{{match['awayTeam']['logo']}}" />{{ match['awayTeam']['name'] }}</td>
+                <td>{{ match['utcDate'] }}</td>
+                <td>
+                    {{ match['score']['fullTime']['homeTeam'] }} : {{ match['score']['fullTime']['awayTeam'] }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
